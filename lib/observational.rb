@@ -12,6 +12,7 @@ module Observational
   # @option opts [Symbol] :on The action to observe. e.g. :after_create for an active_record object
   # @option opts [Symbol] :after A shortcut for AR objects. :after => :create is the equivalent of :on => :after_create
   # @option opts [Symbol] :before Same as :after
+  # @option opts [Symbol] :using accepts only :delayed_job. If supplied observing action will be created as a DJ job
   #
   def observes(model_name, opts = {})
     opts.assert_valid_keys :with, :invokes, :on, :before, :after
@@ -23,7 +24,8 @@ module Observational
     observer    = Observational::Observer.new :method     => opts[:invokes],
                                               :parameters => opts[:with].nil? ? nil : [*opts[:with]],
                                               :subscriber => self,
-                                              :actions    => opts[:on]
+                                              :actions    => opts[:on],
+                                              :using      => opts[:using]
     model_klass.add_observer(observer)
   end
 end

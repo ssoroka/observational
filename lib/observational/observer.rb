@@ -7,10 +7,15 @@ module Observational
       @method     = options[:method]
       @parameters = options[:parameters]
       @actions    = [*options[:actions]]
+      @using      = options[:using]
     end
 
     def invoke(observable)
-      @subscriber.send(method, *arguments(observable))
+      if @using == :delayed_job
+        @subscriber.send_later(method, *arguments(observable))
+      else
+        @subscriber.send(method, *arguments(observable))
+      end
     end
 
     def observes_action?(action)

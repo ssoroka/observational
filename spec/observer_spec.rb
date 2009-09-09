@@ -16,6 +16,19 @@ describe "Observer" do
       @observer.invoke(:the_object)
     end
   end
+  
+  describe 'with delayed::job support' do
+    before do
+      @observer = Observational::Observer.new :subscriber => @klass, 
+                                              :method     => :do_stuff,
+                                              :using      => :delayed_job
+    end
+
+    it "should invoke the :method with the object" do
+      @klass.expects(:send_later).with(:do_stuff, :the_object)
+      @observer.invoke(:the_object)
+    end
+  end
 
   describe "with particular parameters" do
     before do
